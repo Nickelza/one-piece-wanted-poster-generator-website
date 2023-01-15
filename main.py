@@ -66,10 +66,15 @@ def main() -> None:
                 'Vertical alignment', options=('Center', 'Top', 'Bottom'))
 
         # Subsection filter
-        st.caption('Transparency')
+
+        # Set default transparency
+        if file_uploaded is None:
+            default_transparency = 0
+        else:
+            default_transparency = c.OPTIMAL_TRANSPARENCY
 
         st.info(f'Set the portrait transparency (optimal is {c.OPTIMAL_TRANSPARENCY})')
-        transparency = st.slider('Transparency', min_value=0, max_value=255, value=c.OPTIMAL_TRANSPARENCY)
+        transparency = st.slider('Transparency', min_value=0, max_value=255, value=default_transparency)
 
     # SIDE BAR
     with st.sidebar:
