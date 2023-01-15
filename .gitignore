@@ -196,4 +196,8 @@ pip-selfcheck.json
 .history
 .ionide
 
+## Intellij
+.idea/
+one-piece-wanted-poster-website.iml
+
 # End of https://www.toptal.com/developers/gitignore/api/visualstudiocode,python,venv
