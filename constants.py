@@ -16,7 +16,7 @@ HIDE_ST_STYLE += """
     """
 # Center download button in the sidebar
 HIDE_ST_STYLE += """
-    .css-1gca2nb {text-align: center !important;}
+    [data-testid=stSidebar] {text-align: center !important;}
     """
 # End style
 HIDE_ST_STYLE += '</style>'
