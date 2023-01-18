@@ -2,7 +2,7 @@ import io
 import os
 
 import streamlit as st
-from wantedposter.wantedposter import WantedPoster
+from wantedposter.wantedposter import WantedPoster, VerticalAlignment, HorizontalAlignment
 
 import constants as c
 
@@ -85,8 +85,11 @@ def main() -> None:
         # Generate the poster
         wanted_poster = WantedPoster(file_uploaded, first_name, last_name, bounty)
         transparency = 255 - transparency  # Invert the transparency
-        wanted_poster_path = wanted_poster.generate(portrait_vertical_align=vertical_align.lower(),
-                                                    portrait_horizontal_align=horizontal_align.lower(),
+        vertical_align_enum = VerticalAlignment(vertical_align.upper())
+        horizontal_align_enum = HorizontalAlignment(horizontal_align.upper())
+
+        wanted_poster_path = wanted_poster.generate(portrait_vertical_align=vertical_align_enum,
+                                                    portrait_horizontal_align=horizontal_align_enum,
                                                     should_make_portrait_transparent=True,
                                                     portrait_transparency_value=transparency)
 
