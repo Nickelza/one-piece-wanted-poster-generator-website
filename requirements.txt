@@ -1,2 +1,2 @@
 streamlit
-one-piece-wanted-poster==0.0.7
+one-piece-wanted-poster==0.0.9
