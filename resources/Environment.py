@@ -1,6 +1,6 @@
 import os
 from distutils.util import strtobool
-from typing import Optional
+from typing import Optional, List
 
 import constants as c
 
@@ -66,7 +66,7 @@ class Environment:
         """
         return True if strtobool(self.get()) else False
 
-    def get_list(self) -> list[str]:
+    def get_list(self) -> List[str]:
         """
         Get the environment variable as a list
         :return: The environment variable as a list
