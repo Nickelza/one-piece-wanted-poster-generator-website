@@ -3,7 +3,7 @@ import os
 
 import streamlit as st
 import streamlit_analytics
-from wantedposter.wantedposter import WantedPoster, VerticalAlignment, HorizontalAlignment
+from wantedposter.wantedposter import WantedPoster, VerticalAlignment, HorizontalAlignment, CaptureCondition
 
 import constants as c
 from resources import Environment as Env
@@ -71,6 +71,16 @@ def show_page() -> None:
 
     # Other options
     with st.expander("More Options"):
+        # Condition
+        capture_condition_map = {
+            'Dead or Alive': CaptureCondition.DEAD_OR_ALIVE,
+            'Only Dead': CaptureCondition.ONLY_DEAD,
+            'Only Alive': CaptureCondition.ONLY_ALIVE
+        }
+
+        capture_condition_str = st.radio('Capture condition', options=capture_condition_map.keys(), horizontal=True)
+        capture_condition = capture_condition_map[capture_condition_str]
+
         # Subsection alignment
         st.caption('Portrait alignment')
 
@@ -108,7 +118,8 @@ def show_page() -> None:
         wanted_poster_path = wanted_poster.generate(portrait_vertical_align=vertical_align_enum,
                                                     portrait_horizontal_align=horizontal_align_enum,
                                                     should_make_portrait_transparent=True,
-                                                    portrait_transparency_value=transparency)
+                                                    portrait_transparency_value=transparency,
+                                                    capture_condition=capture_condition)
 
         # Show poster preview
         st.image(wanted_poster_path)
