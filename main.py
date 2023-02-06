@@ -2,14 +2,31 @@ import io
 import os
 
 import streamlit as st
+import streamlit_analytics
 from wantedposter.wantedposter import WantedPoster, VerticalAlignment, HorizontalAlignment
 
 import constants as c
+from resources import Environment as Env
 
 
 def main() -> None:
     """
     Main function
+    :return: None
+    """
+    # Start tracking analytics
+    streamlit_analytics.start_tracking(load_from_json=c.ANALYTICS_FILE_PATH)
+
+    # Show page
+    show_page()
+
+    # Stop tracking analytics
+    streamlit_analytics.stop_tracking(unsafe_password=Env.ANALYTICS_PASSWORD.get(), save_to_json=c.ANALYTICS_FILE_PATH)
+
+
+def show_page() -> None:
+    """
+    Show page function
     :return: None
     """
 

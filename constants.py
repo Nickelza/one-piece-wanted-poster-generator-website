@@ -1,4 +1,6 @@
 # Custom style to edit the page
+import os.path
+
 HIDE_ST_STYLE = '<style>'
 # Hide Streamlit default header and footer
 HIDE_ST_STYLE += """
@@ -27,3 +29,7 @@ OPTIMAL_TRANSPARENCY = 55
 
 FULL_NAME_MAX_LENGTH = 16
 BOUNTY_MAX_VALUE = 1_000_000_000_000_000
+
+ANALYTICS_FILE_PATH = os.path.join(os.path.dirname(__file__), 'analytics', 'analytics.json')
+
+STANDARD_SPLIT_CHAR = "|"

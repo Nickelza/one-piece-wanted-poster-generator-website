@@ -133,6 +133,8 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+.streamlit
+!streamlit/secrets.toml.example
 
 # Spyder project settings
 .spyderproject
@@ -200,4 +202,5 @@ pip-selfcheck.json
 .idea/
 one-piece-wanted-poster-website.iml
 
-# End of https://www.toptal.com/developers/gitignore/api/visualstudiocode,python,venv
+# Analytics
+analytics/
