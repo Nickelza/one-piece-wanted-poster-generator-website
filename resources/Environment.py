@@ -1,5 +1,6 @@
 import os
 from distutils.util import strtobool
+from typing import Optional
 
 import constants as c
 
@@ -10,7 +11,7 @@ class Environment:
         self.default_value = default_value
         self.can_be_empty = can_be_empty
 
-    def get_or_none(self) -> str | None:
+    def get_or_none(self) -> Optional[str, None]:
         """
         Get the environment variable or None if it is not set
         :return: The environment variable or None if it is not set
