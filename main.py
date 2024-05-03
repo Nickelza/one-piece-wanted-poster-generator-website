@@ -2,8 +2,15 @@ import io
 import os
 
 import streamlit as st
-import streamlit_analytics
-from wantedposter.wantedposter import WantedPoster, VerticalAlignment, HorizontalAlignment, CaptureCondition
+import streamlit_analytics2 as streamlit_analytics
+from wantedposter.wantedposter import (
+    WantedPoster,
+    VerticalAlignment,
+    HorizontalAlignment,
+    CaptureCondition,
+    Stamp,
+    Effect,
+)
 
 import constants as c
 from resources import Environment as Env
@@ -21,7 +28,9 @@ def main() -> None:
     show_page()
 
     # Stop tracking analytics
-    streamlit_analytics.stop_tracking(unsafe_password=Env.ANALYTICS_PASSWORD.get(), save_to_json=c.ANALYTICS_FILE_PATH)
+    streamlit_analytics.stop_tracking(
+        unsafe_password=Env.ANALYTICS_PASSWORD.get(), save_to_json=c.ANALYTICS_FILE_PATH
+    )
 
 
 def show_page() -> None:
@@ -32,38 +41,42 @@ def show_page() -> None:
 
     # BODY
     # Set web page layout
-    st.set_page_config(page_title='Wanted Poster',
-                       page_icon='./assets/favicon.ico', layout="centered")
+    st.set_page_config(
+        page_title="Wanted Poster", page_icon="./assets/favicon.ico", layout="centered"
+    )
     st.markdown(c.HIDE_ST_STYLE, unsafe_allow_html=True)
 
-    st.subheader('One Piece Wanted Poster Generator')
-    st.info('Open and resize the sidebar to view the generated poster')
+    st.subheader("One Piece Wanted Poster Generator")
+    st.info("Open and resize the sidebar to view the generated poster")
 
     # Image import
     file_uploaded = st.file_uploader(
-        'Select the image to use as portrait', type=['png', 'jpg', 'jpeg'])
+        "Select the image to use as portrait", type=["png", "jpg", "jpeg"]
+    )
 
     # First name
-    first_name = st.text_input(
-        'First Name', placeholder='Enter the first name')
-    last_name = st.text_input(
-        'Last Name', placeholder='Enter the last name')
+    first_name = st.text_input("First Name", placeholder="Enter the first name")
+    last_name = st.text_input("Last Name", placeholder="Enter the last name")
 
     if (len(first_name) + len(last_name)) > c.FULL_NAME_MAX_LENGTH:
         st.warning(
             f"The first name and last name combined must be less than {c.FULL_NAME_MAX_LENGTH} characters."
-            "If it is longer, the text will trimmed")
+            "If it is longer, the text will trimmed"
+        )
 
     # Bounty
     bounty_str = st.text_input(
-        'Bounty', placeholder="Enter the bounty (Max. 999.999.999.999.999)")
+        "Bounty", placeholder="Enter the bounty (Max. 999.999.999.999.999)"
+    )
 
     bounty = 0
-    if bounty_str != '':
+    if bounty_str != "":
         try:
             belly = get_belly_from_string(bounty_str)
             if belly >= c.BOUNTY_MAX_VALUE or belly < 0:
-                st.warning(f"The bounty must be between 0 and {get_belly_formatted(c.BOUNTY_MAX_VALUE)}")
+                st.warning(
+                    f"The bounty must be between 0 and {get_belly_formatted(c.BOUNTY_MAX_VALUE)}"
+                )
             else:
                 bounty = belly
         except ValueError:
@@ -73,24 +86,48 @@ def show_page() -> None:
     with st.expander("More Options"):
         # Condition
         capture_condition_map = {
-            'Dead or Alive': CaptureCondition.DEAD_OR_ALIVE,
-            'Only Dead': CaptureCondition.ONLY_DEAD,
-            'Only Alive': CaptureCondition.ONLY_ALIVE
+            "Dead or Alive": CaptureCondition.DEAD_OR_ALIVE,
+            "Only Dead": CaptureCondition.ONLY_DEAD,
+            "Only Alive": CaptureCondition.ONLY_ALIVE,
         }
 
-        capture_condition_str = st.radio('Capture condition', options=capture_condition_map.keys(), horizontal=True)
+        capture_condition_str = st.radio(
+            "Capture condition", options=capture_condition_map.keys(), horizontal=True
+        )
         capture_condition = capture_condition_map[capture_condition_str]
 
+        # Effect
+        effect_map = {
+            "Frost": Effect.FROST,
+            "Lightning": Effect.LIGHTNING,
+        }
+
+        effects_list = st.multiselect("Effects", options=effect_map.keys())
+        effects_selected = [effect_map[effect] for effect in effects_list]
+
+        # Stamp
+        stamp_map = {
+            "None": None,
+            "Warlord": Stamp.WARLORD,
+            "Do not engage": Stamp.DO_NOT_ENGAGE,
+            "Flee on sight": Stamp.FLEE_ON_SIGHT,
+        }
+
+        stamp_str = st.radio("Stamp", options=stamp_map.keys(), horizontal=True)
+        stamp = stamp_map[stamp_str]
+
         # Subsection alignment
-        st.caption('Portrait alignment')
+        st.caption("Portrait alignment")
 
         col_horizontal_align, col_vertical_align = st.columns(2)
         with col_horizontal_align:
             horizontal_align = st.selectbox(
-                'Horizontal alignment', options=('Center', 'Left', 'Right'))
+                "Horizontal alignment", options=("Center", "Left", "Right")
+            )
         with col_vertical_align:
             vertical_align = st.selectbox(
-                'Vertical alignment', options=('Center', 'Top', 'Bottom'))
+                "Vertical alignment", options=("Center", "Top", "Bottom")
+            )
 
         # Subsection filter
 
@@ -100,8 +137,10 @@ def show_page() -> None:
         else:
             default_transparency = c.OPTIMAL_TRANSPARENCY
 
-        st.info(f'Set the portrait transparency (optimal is {c.OPTIMAL_TRANSPARENCY})')
-        transparency = st.slider('Transparency', min_value=0, max_value=255, value=default_transparency)
+        st.info(f"Set the portrait transparency (optimal is {c.OPTIMAL_TRANSPARENCY})")
+        transparency = st.slider(
+            "Transparency", min_value=0, max_value=255, value=default_transparency
+        )
 
     # SIDE BAR
     with st.sidebar:
@@ -115,24 +154,33 @@ def show_page() -> None:
         vertical_align_enum = VerticalAlignment(vertical_align.upper())
         horizontal_align_enum = HorizontalAlignment(horizontal_align.upper())
 
-        wanted_poster_path = wanted_poster.generate(portrait_vertical_align=vertical_align_enum,
-                                                    portrait_horizontal_align=horizontal_align_enum,
-                                                    should_make_portrait_transparent=True,
-                                                    portrait_transparency_value=transparency,
-                                                    capture_condition=capture_condition)
+        wanted_poster_path = wanted_poster.generate(
+            portrait_vertical_align=vertical_align_enum,
+            portrait_horizontal_align=horizontal_align_enum,
+            should_make_portrait_transparent=True,
+            portrait_transparency_value=transparency,
+            capture_condition=capture_condition,
+            effects=effects_selected,
+            stamp=stamp,
+        )
 
         # Show poster preview
         st.image(wanted_poster_path)
 
         # Download poster
         with open(wanted_poster_path, "rb") as portrait:
-            file_name = 'wanted_poster'
-            if first_name != '':
-                file_name = file_name + '_' + first_name
-            if last_name != '':
-                file_name = file_name + '_' + last_name
-            file_name += '.jpg'
-            st.download_button(label="Download image", data=portrait, file_name=file_name, mime="image/jpg")
+            file_name = "wanted_poster"
+            if first_name != "":
+                file_name = file_name + "_" + first_name
+            if last_name != "":
+                file_name = file_name + "_" + last_name
+            file_name += ".jpg"
+            st.download_button(
+                label="Download image",
+                data=portrait,
+                file_name=file_name,
+                mime="image/jpg",
+            )
 
         # Delete poster
         current_dir = os.getcwd()
@@ -147,7 +195,7 @@ def get_belly_from_string(amount_str: str) -> int:
     :param amount_str: The amount which can be separated by dots or commas
     :return: The amount without dots or commas
     """
-    return int(amount_str.strip().replace(',', '').replace('.', ''))
+    return int(amount_str.strip().replace(",", "").replace(".", ""))
 
 
 def get_belly_formatted(belly: int) -> str:
@@ -157,8 +205,8 @@ def get_belly_formatted(belly: int) -> str:
     :return: The formatted belly e.g. 1,000,000
     """
 
-    return '{0:,}'.format(belly)
+    return "{0:,}".format(belly)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
